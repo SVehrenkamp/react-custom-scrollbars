@@ -341,7 +341,7 @@ export default class Scrollbars extends Component {
         this.handleDragStart(event);
         const { target, touches } = event;
         const { offsetHeight } = target;
-        const { clientY } = touches[0]
+        const { clientY } = touches[0];
         const { top } = target.getBoundingClientRect();
         this.prevPageY = offsetHeight - (clientY - top);
     }
@@ -382,7 +382,7 @@ export default class Scrollbars extends Component {
             this.view.scrollLeft = this.getScrollLeftForOffset(offset);
         }
         if (this.prevPageY) {
-          if(event.touches) {
+          if (event.touches) {
             const { clientY } = event.touches[0];
             const { top: trackTop } = this.trackVertical.getBoundingClientRect();
             const thumbHeight = this.getThumbVerticalHeight();
