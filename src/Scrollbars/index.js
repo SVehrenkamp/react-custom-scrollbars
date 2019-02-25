@@ -61,6 +61,7 @@ export default class Scrollbars extends Component {
         this.handleVerticalTrackMouseDown = this.handleVerticalTrackMouseDown.bind(this);
         this.handleHorizontalThumbMouseDown = this.handleHorizontalThumbMouseDown.bind(this);
         this.handleVerticalThumbMouseDown = this.handleVerticalThumbMouseDown.bind(this);
+        this.handleVerticalThumbTouchStart = this.handleVerticalThumbTouchStart.bind(this);
         this.handleWindowResize = this.handleWindowResize.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
         this.handleDrag = this.handleDrag.bind(this);
@@ -224,6 +225,12 @@ export default class Scrollbars extends Component {
         trackVertical.addEventListener('mousedown', this.handleVerticalTrackMouseDown);
         thumbHorizontal.addEventListener('mousedown', this.handleHorizontalThumbMouseDown);
         thumbVertical.addEventListener('mousedown', this.handleVerticalThumbMouseDown);
+
+
+        trackHorizontal.addEventListener('touchstart', this.handleHorizontalTrackMouseDown);
+        trackVertical.addEventListener('touchstart', this.handleVerticalTrackMouseDown);
+        thumbHorizontal.addEventListener('touchstart', this.handleHorizontalThumbMouseDown);
+        thumbVertical.addEventListener('touchstart', this.handleVerticalThumbTouchStart);
         window.addEventListener('resize', this.handleWindowResize);
     }
 
@@ -241,6 +248,13 @@ export default class Scrollbars extends Component {
         trackVertical.removeEventListener('mousedown', this.handleVerticalTrackMouseDown);
         thumbHorizontal.removeEventListener('mousedown', this.handleHorizontalThumbMouseDown);
         thumbVertical.removeEventListener('mousedown', this.handleVerticalThumbMouseDown);
+
+
+        trackHorizontal.removeEventListener('touchstart', this.handleHorizontalTrackMouseDown);
+        trackVertical.removeEventListener('touchstart', this.handleVerticalTrackMouseDown);
+        thumbHorizontal.removeEventListener('touchstart', this.handleHorizontalThumbMouseDown);
+        thumbVertical.removeEventListener('touchstart', this.handleVerticalThumbTouchStart);
+
         window.removeEventListener('resize', this.handleWindowResize);
         // Possibly setup by `handleDragStart`
         this.teardownDragging();
@@ -322,10 +336,23 @@ export default class Scrollbars extends Component {
         this.prevPageY = offsetHeight - (clientY - top);
     }
 
+    handleVerticalThumbTouchStart(event) {
+        event.preventDefault();
+        this.handleDragStart(event);
+        const { target, touches } = event;
+        const { offsetHeight } = target;
+        const { clientY } = touches[0]
+        const { top } = target.getBoundingClientRect();
+        this.prevPageY = offsetHeight - (clientY - top);
+    }
+
     setupDragging() {
         css(document.body, disableSelectStyle);
         document.addEventListener('mousemove', this.handleDrag);
         document.addEventListener('mouseup', this.handleDragEnd);
+
+        document.addEventListener('touchmove', this.handleDrag);
+        document.addEventListener('touchend', this.handleDragEnd);
         document.onselectstart = returnFalse;
     }
 
@@ -333,6 +360,9 @@ export default class Scrollbars extends Component {
         css(document.body, disableSelectStyleReset);
         document.removeEventListener('mousemove', this.handleDrag);
         document.removeEventListener('mouseup', this.handleDragEnd);
+
+        document.removeEventListener('touchmove', this.handleDrag);
+        document.removeEventListener('touchend', this.handleDragEnd);
         document.onselectstart = undefined;
     }
 
@@ -352,12 +382,21 @@ export default class Scrollbars extends Component {
             this.view.scrollLeft = this.getScrollLeftForOffset(offset);
         }
         if (this.prevPageY) {
-            const { clientY } = event;
+          if(event.touches) {
+            const { clientY } = event.touches[0];
             const { top: trackTop } = this.trackVertical.getBoundingClientRect();
             const thumbHeight = this.getThumbVerticalHeight();
             const clickPosition = thumbHeight - this.prevPageY;
             const offset = -trackTop + clientY - clickPosition;
             this.view.scrollTop = this.getScrollTopForOffset(offset);
+          } else {
+              const { clientY } = event;
+              const { top: trackTop } = this.trackVertical.getBoundingClientRect();
+              const thumbHeight = this.getThumbVerticalHeight();
+              const clickPosition = thumbHeight - this.prevPageY;
+              const offset = -trackTop + clientY - clickPosition;
+              this.view.scrollTop = this.getScrollTopForOffset(offset);
+            }
         }
         return false;
     }
