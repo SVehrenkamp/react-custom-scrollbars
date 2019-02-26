@@ -710,7 +710,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function handleHorizontalTrackMouseDown(event) {
 	            event.preventDefault();
 	            var target = event.target,
-	                clientX = event.clientX;
+	                touches = event.touches;
+
+	            var clientX = touches ? touches[0].clientX : event.clientX;
 
 	            var _target$getBoundingCl = target.getBoundingClientRect(),
 	                targetLeft = _target$getBoundingCl.left;
@@ -724,7 +726,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function handleVerticalTrackMouseDown(event) {
 	            event.preventDefault();
 	            var target = event.target,
-	                clientY = event.clientY;
+	                touches = event.touches;
+
+	            var clientY = touches ? touches[0].clientY : event.clientY;
 
 	            var _target$getBoundingCl2 = target.getBoundingClientRect(),
 	                targetTop = _target$getBoundingCl2.top;
@@ -739,7 +743,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            event.preventDefault();
 	            this.handleDragStart(event);
 	            var target = event.target,
-	                clientX = event.clientX;
+	                touches = event.touches;
+
+	            var clientX = touches ? touches[0].clientX : event.clientX;
 	            var offsetWidth = target.offsetWidth;
 
 	            var _target$getBoundingCl3 = target.getBoundingClientRect(),
@@ -752,8 +758,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function handleVerticalThumbMouseDown(event) {
 	            event.preventDefault();
 	            this.handleDragStart(event);
-	            var target = event.target,
-	                clientY = event.clientY;
+	            var target = event.target;
+
+	            var clientY = touches ? touches[0].clientY : event.clientY;
 	            var offsetHeight = target.offsetHeight;
 
 	            var _target$getBoundingCl4 = target.getBoundingClientRect(),
@@ -769,7 +776,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var target = event.target,
 	                touches = event.touches;
 	            var offsetHeight = target.offsetHeight;
-	            var clientY = touches[0].clientY;
+
+	            var clientY = touches ? touches[0].clientY : event.clientY;
 
 	            var _target$getBoundingCl5 = target.getBoundingClientRect(),
 	                top = _target$getBoundingCl5.top;
@@ -809,7 +817,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'handleDrag',
 	        value: function handleDrag(event) {
 	            if (this.prevPageX) {
-	                var clientX = event.clientX;
+	                var clientX = touches ? touches[0].clientX : event.clientX;
 
 	                var _trackHorizontal$getB = this.trackHorizontal.getBoundingClientRect(),
 	                    trackLeft = _trackHorizontal$getB.left;
@@ -820,27 +828,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.view.scrollLeft = this.getScrollLeftForOffset(offset);
 	            }
 	            if (this.prevPageY) {
-	                if (event.touches) {
-	                    var clientY = event.touches[0].clientY;
+	                var clientY = touches ? touches[0].clientY : event.clientY;
 
-	                    var _trackVertical$getBou = this.trackVertical.getBoundingClientRect(),
-	                        trackTop = _trackVertical$getBou.top;
+	                var _trackVertical$getBou = this.trackVertical.getBoundingClientRect(),
+	                    trackTop = _trackVertical$getBou.top;
 
-	                    var thumbHeight = this.getThumbVerticalHeight();
-	                    var _clickPosition = thumbHeight - this.prevPageY;
-	                    var _offset = -trackTop + clientY - _clickPosition;
-	                    this.view.scrollTop = this.getScrollTopForOffset(_offset);
-	                } else {
-	                    var _clientY = event.clientY;
-
-	                    var _trackVertical$getBou2 = this.trackVertical.getBoundingClientRect(),
-	                        _trackTop = _trackVertical$getBou2.top;
-
-	                    var _thumbHeight = this.getThumbVerticalHeight();
-	                    var _clickPosition2 = _thumbHeight - this.prevPageY;
-	                    var _offset2 = -_trackTop + _clientY - _clickPosition2;
-	                    this.view.scrollTop = this.getScrollTopForOffset(_offset2);
-	                }
+	                var thumbHeight = this.getThumbVerticalHeight();
+	                var _clickPosition = thumbHeight - this.prevPageY;
+	                var _offset = -trackTop + clientY - _clickPosition;
+	                this.view.scrollTop = this.getScrollTopForOffset(_offset);
 	            }
 	            return false;
 	        }
